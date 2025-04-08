@@ -52,8 +52,8 @@ class MainActivity : AppCompatActivity() {
         comicImageView = findViewById<ImageView>(R.id.comicImageView)
 
 
-
-        sharedPreferences = getSharedPreferences("com.example.networkapp", MODE_PRIVATE)
+        //this is a shared preference file, and it is set to private so that it can only be accessed by this app
+        sharedPreferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE)
 
         loadComic()
 
@@ -80,32 +80,37 @@ class MainActivity : AppCompatActivity() {
 
     // Display a comic for a given comic JSON object
     private fun showComic (comicObject: JSONObject) {
-        titleTextView.text = comicObject.getString("title")
-        descriptionTextView.text = comicObject.getString("alt")
-        Picasso.get().load(comicObject.getString("img")).into(comicImageView)
+        titleTextView.text = comicObject.getString(KEY_TITLE)
+        descriptionTextView.text = comicObject.getString(KEY_ALT)
+        Picasso.get().load(comicObject.getString(KEY_IMG)).into(comicImageView)
     }
 
     // Implement this function
     private fun saveComic(comicObject: JSONObject) {
         val editor = sharedPreferences.edit()
-        editor.putString(KEY_TITLE, comicObject.getString("title"))
-        editor.putString(KEY_ALT, comicObject.getString("alt"))
-        editor.putString(KEY_IMG, comicObject.getString("img"))
-        editor.putString(KEY_NUM, comicObject.getString("num"))
+        //STORING THE DATA IN SHARED PREFERENCES
+        editor.putString(KEY_TITLE, comicObject.getString(KEY_TITLE))
+        editor.putString(KEY_ALT, comicObject.getString(KEY_ALT))
+        editor.putString(KEY_IMG, comicObject.getString(KEY_IMG))
+        editor.putString(KEY_NUM, comicObject.getString(KEY_NUM))
         editor.apply()
         Toast.makeText(this, "Comic saved", Toast.LENGTH_SHORT).show()
     }
 
     private fun loadComic() {
         if(sharedPreferences.contains(KEY_TITLE)) {
+            //if the comic is saved, load it
+            //LOAD THE DATA FROM SHARED PREFERENCES
             val title = sharedPreferences.getString(KEY_TITLE, "")
             val alt = sharedPreferences.getString(KEY_ALT, "")
             val img = sharedPreferences.getString(KEY_IMG, "")
             val num = sharedPreferences.getString(KEY_NUM, "")
-
+            //set the textviews and imageview with the saved data
             titleTextView.text = title
             descriptionTextView.text = alt
+            //picasso is used to load the image
             Picasso.get().load(img).into(comicImageView)
+            //set the edittext with the comic number
             numberEditText.setText(num)
 
             Toast.makeText(this, "Loaded saved comic", Toast.LENGTH_SHORT).show()
